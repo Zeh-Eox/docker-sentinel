@@ -1,0 +1,7 @@
+{
+  "ignoredPatterns": [
+    "no config file specified",
+    "memory overcommit must be enabled"
+  ],
+  "excludedContainers": ["docker-sentinel"]
+}
