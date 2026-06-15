@@ -4,7 +4,7 @@
   "description": "AI-powered Docker log monitoring daemon with Discord, Telegram, and email alerts.",
   "main": "./dist/index.js",
   "bin": {
-    "docker-sentinel": "./dist/cli/index.js"
+    "docker-sentinel": "dist/cli/index.js"
   },
   "scripts": {
     "build": "tsc",

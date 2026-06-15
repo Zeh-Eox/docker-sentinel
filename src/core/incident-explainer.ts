@@ -7,73 +7,74 @@ export const explainIncident = (
 
   if (lower.includes("memory overcommit")) {
     return {
-      probableCause: "Le paramètre Linux vm.overcommit_memory est désactivé.",
+      probableCause: "The Linux vm.overcommit_memory parameter is disabled.",
 
       impact:
-        "Les sauvegardes Redis et la réplication peuvent échouer sous forte pression mémoire.",
+        "Redis background saves and replication may fail under memory pressure.",
 
       recommendation:
-        "Exécuter 'sysctl vm.overcommit_memory=1' puis rendre le changement permanent dans /etc/sysctl.conf.",
+        "Run 'sysctl vm.overcommit_memory=1' and make the change persistent in /etc/sysctl.conf.",
 
       confidence: 0.9,
-      category: "Configuration système",
+      category: "System Configuration",
     };
   }
 
   if (lower.includes("column") && lower.includes("does not exist")) {
     return {
       probableCause:
-        "Une requête SQL référence une colonne absente de la base de données.",
+        "A SQL query is referencing a column that does not exist in the database schema.",
 
-      impact: "Les opérations utilisant cette requête échoueront.",
+      impact: "Operations relying on this query will fail.",
 
       recommendation:
-        "Vérifier les migrations et comparer le schéma PostgreSQL avec le code applicatif.",
+        "Review your database migrations and compare the PostgreSQL schema with the application code.",
 
       confidence: 0.8,
-      category: "Base de données",
+      category: "Database",
     };
   }
 
   if (lower.includes("relation") && lower.includes("does not exist")) {
     return {
-      probableCause: "La table PostgreSQL demandée n'existe pas.",
+      probableCause: "The requested PostgreSQL table does not exist.",
 
-      impact: "Les requêtes SQL ciblant cette table échoueront.",
+      impact: "Queries targeting this table will fail.",
 
       recommendation:
-        "Vérifier les migrations et la connexion à la bonne base de données.",
+        "Verify your database migrations and ensure the application is connected to the correct database.",
 
       confidence: 0.8,
-      category: "Base de données",
+      category: "Database",
     };
   }
 
   if (lower.includes("econnrefused") || lower.includes("connection refused")) {
     return {
-      probableCause: "Le service distant est inaccessible ou arrêté.",
+      probableCause: "The target service is unavailable or not running.",
 
-      impact: "L'application ne peut pas communiquer avec sa dépendance.",
+      impact:
+        "The application cannot communicate with one of its dependencies.",
 
       recommendation:
-        "Vérifier que le conteneur cible est démarré et que le port est correct.",
+        "Verify that the target container is running and that the configured port is correct.",
 
       confidence: 0.7,
-      category: "Réseau",
+      category: "Networking",
     };
   }
 
   if (lower.includes("out of memory") || lower.includes("oomkilled")) {
     return {
-      probableCause: "Le conteneur a dépassé la mémoire disponible.",
+      probableCause: "The container exceeded its available memory limit.",
 
-      impact: "Le processus peut être tué brutalement par le noyau Linux.",
+      impact: "The process may be terminated by the Linux kernel.",
 
       recommendation:
-        "Augmenter la mémoire disponible ou optimiser l'application.",
+        "Increase the available memory or optimize the application's memory usage.",
 
       confidence: 0.9,
-      category: "Ressources",
+      category: "Resources",
     };
   }
 

@@ -1,8 +1,9 @@
-# 🐳 Docker Sentinel
+# Docker Sentinel
 
 ![Node.js](https://img.shields.io/badge/Node.js-22.x-339933?style=for-the-badge&logo=node.js&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+[![npm](https://img.shields.io/npm/v/docker-sentinel?style=for-the-badge&logo=npm&logoColor=white)](https://www.npmjs.com/package/docker-sentinel)
 [![MIT License](https://img.shields.io/badge/MIT-License-2ea44f?style=for-the-badge&logo=open-source-initiative&logoColor=white)](./LICENSE)
 
 Docker Sentinel is a lightweight daemon that monitors your Docker containers in real time, detects errors and warnings in their logs, and sends AI-powered alerts to Discord, Telegram, and Email.
@@ -28,49 +29,61 @@ Container logs → Severity detection → Deduplication → Gemini AI analysis �
 
 Every alert includes:
 
-| Field             | Description                         |
-| ----------------- | ----------------------------------- |
-| 🔍 Probable cause | Why this error likely happened      |
-| ⚠️ Impact         | What it affects on your system      |
-| 💡 Recommendation | Concrete steps to fix it            |
-| Container         | Which container triggered the alert |
-| Severity          | `WARNING` or `ERROR`                |
-| Occurrences       | How many times this has happened    |
+| Field          | Description                         |
+| -------------- | ----------------------------------- |
+| Probable cause | Why this error likely happened      |
+| Impact         | What it affects on your system      |
+| Recommendation | Concrete steps to fix it            |
+| Container      | Which container triggered the alert |
+| Severity       | `WARNING` or `ERROR`                |
+| Occurrences    | How many times this has happened    |
 
 ---
 
-## Quick start
+## Installation
 
-### Prerequisites
+### Option A — npm (recommended)
 
-- Docker and Docker Compose installed on your server
-- A [Gemini API key](https://aistudio.google.com/app/apikey), unless you use `AI_PROVIDER=rule-based`
-- Optional: a Discord webhook URL
-- Optional: a Telegram bot token and chat ID
-- Optional: an SMTP account for email notifications
+Requires Node.js 22+ installed on your machine.
 
-### 1. Clone the repository
+```bash
+# Install globally
+npm install -g docker-sentinel
+
+# Interactive configuration wizard
+docker-sentinel init
+
+# Start monitoring
+docker-sentinel start
+```
+
+`docker-sentinel init` will generate a `.env` and a `sentinel.config.json` in your current directory by asking you a series of questions. Only the channels you configure will be enabled.
+
+### Option B — Docker Compose
+
+No Node.js required. Ideal for servers.
 
 ```bash
 git clone https://github.com/Zeh-Eox/docker-sentinel.git
-cd dockersentinel
-```
-
-### 2. Configure environment variables
-
-```bash
+cd docker-sentinel
 cp .env.example .env
 ```
 
-Edit `.env` with your values (see [Environment variables](#environment-variables) below).
-
-### 3. Run
+Edit `.env` with your values, then:
 
 ```bash
 docker compose up -d
 ```
 
-That's it. Sentinel will automatically start monitoring all running containers.
+---
+
+## Prerequisites
+
+Regardless of the installation method, you will need:
+
+- Docker running on the host machine
+- A [Gemini API key](https://aistudio.google.com/app/apikey) (or set `AI_PROVIDER=rule-based` to skip)
+- At least one notification channel configured (Discord, Telegram, or Email)
 
 ---
 
@@ -91,19 +104,21 @@ That's it. Sentinel will automatically start monitoring all running containers.
 | `TELEGRAM_BOT_TOKEN`  | Telegram bot token from @BotFather                | `123456:AAF...`                        |
 | `TELEGRAM_CHAT_ID`    | Your Telegram chat ID                             | `123456789`                            |
 
-Copy `.env.example` to `.env`, then fill only the channels you want to enable.
-
 ### Getting your Telegram chat ID
 
 1. Send any message to your bot
 2. Open `https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates` in your browser
 3. Find `"chat": { "id": ... }` — that number is your chat ID
 
+### Gmail App Password
+
+Gmail requires an App Password instead of your regular password. Generate one at [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) (requires 2FA to be enabled).
+
 ---
 
 ## Configuration
 
-Sentinel can be configured via `sentinel.config.json` at the project root:
+Sentinel can be configured via `sentinel.config.json` in the directory where you run it:
 
 ```json
 {
@@ -120,7 +135,7 @@ Sentinel can be configured via `sentinel.config.json` at the project root:
 | `ignoredPatterns`    | Log patterns to silently ignore (case-insensitive) |
 | `excludedContainers` | Container names Sentinel will not monitor          |
 
-> After editing `sentinel.config.json`, rebuild the image: `docker compose down && docker compose build && docker compose up -d`
+> When using Docker Compose, rebuild after editing: `docker compose down && docker compose build && docker compose up -d`
 
 ---
 
